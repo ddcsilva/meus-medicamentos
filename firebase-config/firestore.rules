@@ -3,138 +3,24 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // ========================================
-    // HELPER FUNCTIONS
-    // ========================================
+    // Função auxiliar para verificar autenticação
     function isAuthenticated() {
       return request.auth != null;
     }
-    
-    function isOwner(uid) {
-      return isAuthenticated() && request.auth.uid == uid;
+
+    // Função auxiliar para verificar se é dono do dado (ex: user profile)
+    function isOwner(userId) {
+      return request.auth.uid == userId;
     }
-    
-    function isApproved() {
-      return isAuthenticated() && 
-             get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.status == 'approved';
-    }
-    
-    function getUserFamilyId() {
-      return get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.familiaId;
-    }
-    
-    function isFamilyMember(familiaId) {
-      return isAuthenticated() && getUserFamilyId() == familiaId;
-    }
-    
-    function isFamilyAdmin(familiaId) {
-      return isFamilyMember(familiaId) && 
-             get(/databases/$(database)/documents/families/$(familiaId)).data.adminId == request.auth.uid;
-    }
-    
-    // ========================================
-    // PROFILES COLLECTION
-    // ========================================
-    match /profiles/{userId} {
-      // Usuário pode ler seu próprio perfil
-      allow read: if isOwner(userId);
-      
-      // Membros da mesma família podem ler perfis uns dos outros
-      allow read: if isAuthenticated() && 
-                     resource.data.familiaId != null && 
-                     isFamilyMember(resource.data.familiaId);
-      
-      // Usuário pode criar seu próprio perfil (registro inicial)
-      allow create: if isOwner(userId) && 
-                       request.resource.data.status == 'pending';
-      
-      // Usuário pode atualizar seu próprio perfil
-      allow update: if isOwner(userId);
-      
-      // Nunca permitir delete direto
-      allow delete: if false;
-    }
-    
-    // ========================================
-    // FAMILIES COLLECTION
-    // ========================================
-    match /families/{familyId} {
-      // Membros podem ler dados da família
-      allow read: if isFamilyMember(familyId);
-      
-      // Usuários aprovados podem criar famílias
-      allow create: if isApproved();
-      
-      // Apenas admin pode atualizar família
-      allow update: if isFamilyAdmin(familyId);
-      
-      // Nunca permitir delete
-      allow delete: if false;
-    }
-    
-    // ========================================
-    // MEDICATIONS COLLECTION
-    // ========================================
-    match /medications/{medId} {
-      // Membros da família podem ler medicamentos
-      allow read: if isFamilyMember(resource.data.familiaId);
-      
-      // Membros aprovados podem criar medicamentos
-      allow create: if isApproved() && 
-                       isFamilyMember(request.resource.data.familiaId);
-      
-      // Membros podem atualizar medicamentos
-      allow update: if isFamilyMember(resource.data.familiaId);
-      
-      // Membros podem deletar medicamentos
-      allow delete: if isFamilyMember(resource.data.familiaId);
-    }
-    
-    // ========================================
-    // ALERTS COLLECTION
-    // ========================================
-    match /alerts/{alertId} {
-      // Membros podem ler alertas
-      allow read: if isFamilyMember(resource.data.familiaId);
-      
-      // Membros aprovados podem criar alertas
-      allow create: if isApproved() && 
-                       isFamilyMember(request.resource.data.familiaId);
-      
-      // Membros podem atualizar (marcar como lido)
-      allow update: if isFamilyMember(resource.data.familiaId);
-      
-      // Membros podem deletar alertas
-      allow delete: if isFamilyMember(resource.data.familiaId);
-    }
-    
-    // ========================================
-    // MEDICATION REMINDERS COLLECTION
-    // ========================================
-    match /medication_reminders/{reminderId} {
-      allow read: if isFamilyMember(resource.data.familiaId);
-      allow create: if isApproved() && 
-                       isFamilyMember(request.resource.data.familiaId);
-      allow update: if isFamilyMember(resource.data.familiaId);
-      allow delete: if isFamilyMember(resource.data.familiaId);
-    }
-    
-    // ========================================
-    // MEDICATION USAGE COLLECTION
-    // ========================================
-    match /medication_usage/{usageId} {
-      allow read: if isFamilyMember(resource.data.familiaId);
-      allow create: if isApproved() && 
-                       isFamilyMember(request.resource.data.familiaId);
-      allow update: if isFamilyMember(resource.data.familiaId);
-      allow delete: if isFamilyMember(resource.data.familiaId);
-    }
-    
-    // ========================================
-    // BLOQUEIO GERAL
-    // ========================================
+
+    // Regra Padrão: Bloqueia tudo que não for explicitamente permitido abaixo
     match /{document=**} {
       allow read, write: if false;
+    }
+    
+    // Exemplo: Coleção de Usuários (Apenas o próprio usuário lê/edita seu doc)
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
     }
   }
 }

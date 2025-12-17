@@ -2,8 +2,8 @@
   "firestore": {
     "database": "(default)",
     "location": "southamerica-east1",
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "rules": "firebase-config/firestore.rules",
+    "indexes": "firebase-config/firestore.indexes.json"
   },
   "functions": [
     {
@@ -38,6 +38,6 @@
     ]
   },
   "storage": {
-    "rules": "storage.rules"
+    "rules": "firebase-config/storage.rules"
   }
 }
