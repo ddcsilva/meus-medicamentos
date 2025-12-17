@@ -32,8 +32,8 @@ export class ResetPasswordComponent {
       await this.authService.recoverPassword(email);
       this.emailSent.set(true);
     } catch (error: any) {
-      console.error(error);
-      this.errorMessage.set('Não foi possível enviar o e-mail. Verifique se o endereço está correto.');
+      // O AuthService já retorna uma mensagem amigável via AuthError
+      this.errorMessage.set(error.message || 'Não foi possível enviar o e-mail.');
     } finally {
       this.isSubmitting.set(false);
     }

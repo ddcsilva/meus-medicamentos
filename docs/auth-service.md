@@ -52,7 +52,30 @@ Isso permite que um Spinner global no `AppComponent` ou no `Layout` reaja automa
 
 ---
 
-## Próximos Passos Sugeridos
-1.  Refatorar a navegação para fora do serviço.
-2.  Mapear o objeto `User` para um modelo interno.
-3.  Implementar um interceptor ou serviço de notificação para erros do Firebase (ex: `auth/user-not-found`).
+## Status de Implementação
+
+### ✅ Implementados
+1.  **Centralização do Redirecionamento** - Router removido do service
+2.  **Gerenciamento Global de Loading** - Signal `isLoading` implementado
+3.  **Tipagem Estrita e DTOs** - Modelo `AppUser` criado e utilizado
+4.  **Tratamento Centralizado de Erros** - Classe `AuthError` e mapeamento de mensagens
+
+### 🔄 Parcialmente Implementados
+1.  **Desacoplamento do Provedor** - Modelo interno criado, mas falta interface `AuthGateway` abstrata
+
+### ❌ Pendentes (Próximos Passos)
+1.  **Abstração Completa** - Criar interface `AuthGateway` para desacoplar totalmente do Firebase
+2.  **Melhorias de UX no Fluxo de Recuperação** - Validações e feedbacks mais ricos
+3.  **Configurações de Segurança Avançadas** - Persistence explícita e preparação para MFA
+
+## Melhorias Implementadas Recentemente
+
+### Tratamento Centralizado de Erros ✨
+Criamos uma arquitetura profissional de tratamento de erros:
+- **Arquivo:** `auth-error.ts` com a classe `AuthError` e função `mapFirebaseAuthError()`
+- **Benefícios:**
+  - DRY: Zero duplicação de código entre componentes
+  - Consistência: Mesmas mensagens em toda aplicação
+  - Manutenibilidade: Um único local para alterar mensagens
+  - UX: Mensagens em português e amigáveis ao usuário
+  - Segurança: Evita enumeração de usuários (mesma mensagem para erros similares)

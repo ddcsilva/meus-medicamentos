@@ -67,6 +67,17 @@
     }
   </div>
 
+  <!-- Feedback de Erro Geral -->
+  @if (errorMessage()) {
+  <div
+    class="p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm flex items-center gap-2 animate-fade-in"
+    role="alert"
+  >
+    <span class="font-bold">!</span>
+    {{ errorMessage() }}
+  </div>
+  }
+
   <!-- Botão Submit -->
   <button
     type="submit"

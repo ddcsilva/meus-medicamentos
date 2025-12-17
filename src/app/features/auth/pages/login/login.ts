@@ -38,21 +38,10 @@ export class LoginComponent {
       await this.authService.login(email, password);
       this.router.navigate(['/app/dashboard']);
     } catch (error: any) {
-      this.handleError(error);
+      // O AuthService já retorna uma mensagem amigável via AuthError
+      this.errorMessage.set(error.message || 'Ocorreu um erro inesperado.');
     } finally {
       this.isSubmitting.set(false);
-    }
-  }
-
-  private handleError(error: any) {
-    // Tratamento de erros seguro (evita enumeração de usuários)
-    const code = error.code;
-    if (code === 'auth/invalid-credential' || code === 'auth/user-not-found' || code === 'auth/wrong-password') {
-      this.errorMessage.set('E-mail ou senha incorretos.');
-    } else if (code === 'auth/too-many-requests') {
-      this.errorMessage.set('Muitas tentativas. Tente novamente mais tarde.');
-    } else {
-      this.errorMessage.set('Ocorreu um erro inesperado. Verifique sua conexão.');
     }
   }
 }

@@ -2,6 +2,7 @@ import { Injectable, inject, computed, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { AppUser } from './user.model';
+import { mapFirebaseAuthError } from './auth-error';
 import {
   Auth,
   authState,
@@ -53,8 +54,7 @@ export class AuthService {
     try {
       await signInWithEmailAndPassword(this.auth, email, pass);
     } catch (error) {
-      console.error('Erro no Login:', error);
-      throw error;
+      throw mapFirebaseAuthError(error);
     } finally {
       this._isLoading.set(false);
     }
@@ -75,8 +75,7 @@ export class AuthService {
         });
       }
     } catch (error) {
-      console.error('Erro no Cadastro:', error);
-      throw error;
+      throw mapFirebaseAuthError(error);
     } finally {
       this._isLoading.set(false);
     }
@@ -90,8 +89,7 @@ export class AuthService {
     try {
       await signOut(this.auth);
     } catch (error) {
-      console.error('Erro ao sair:', error);
-      throw error;
+      throw mapFirebaseAuthError(error);
     } finally {
       this._isLoading.set(false);
     }
@@ -105,8 +103,7 @@ export class AuthService {
     try {
       await sendPasswordResetEmail(this.auth, email);
     } catch (error) {
-      console.error('Erro ao resetar senha:', error);
-      throw error;
+      throw mapFirebaseAuthError(error);
     } finally {
       this._isLoading.set(false);
     }
@@ -122,8 +119,7 @@ export class AuthService {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(this.auth, provider);
     } catch (error) {
-      console.error('Erro no Google Login:', error);
-      throw error;
+      throw mapFirebaseAuthError(error);
     } finally {
       this._isLoading.set(false);
     }

@@ -17,6 +17,7 @@ export class RegisterComponent {
   private router = inject(Router);
 
   isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
 
   registerForm = this.fb.group(
     {
@@ -31,14 +32,16 @@ export class RegisterComponent {
   async onSubmit() {
     if (this.registerForm.invalid) return;
     this.isSubmitting.set(true);
+    this.errorMessage.set(null);
 
     const { email, password, fullName } = this.registerForm.getRawValue();
 
     try {
       await this.authService.register(email, password, fullName);
       this.router.navigate(['/app/dashboard']);
-    } catch (err) {
-      console.error(err);
+    } catch (error: any) {
+      // O AuthService já retorna uma mensagem amigável via AuthError
+      this.errorMessage.set(error.message || 'Ocorreu um erro inesperado.');
     } finally {
       this.isSubmitting.set(false);
     }
