@@ -23,6 +23,9 @@ import { AppUser } from './user.model';
  * Esta é a única classe que conhece detalhes do Firebase.
  * Se migrarmos para outro provedor, criamos uma nova implementação
  * sem tocar no AuthService ou nos componentes.
+ * 
+ * Nota: Firebase usa browserLocalPersistence por padrão (mantém login após fechar navegador).
+ * Para mudar isso em produção, configure via Firebase Console ou Rules.
  */
 @Injectable({
   providedIn: 'root',
