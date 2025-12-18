@@ -54,28 +54,100 @@ Isso permite que um Spinner global no `AppComponent` ou no `Layout` reaja automa
 
 ## Status de Implementação
 
-### ✅ Implementados
+### ✅ Implementados (Production-Ready)
 1.  **Centralização do Redirecionamento** - Router removido do service
 2.  **Gerenciamento Global de Loading** - Signal `isLoading` implementado
 3.  **Tipagem Estrita e DTOs** - Modelo `AppUser` criado e utilizado
 4.  **Tratamento Centralizado de Erros** - Classe `AuthError` e mapeamento de mensagens
+5.  **Abstração Completa (AuthGateway)** - Interface + Implementação Firebase
+6.  **Melhorias de UX na Recuperação de Senha** - Validação visual + Cooldown de reenvio
+7.  **Configurações de Segurança Avançadas** - Persistência explícita + Config por ambiente
 
-### 🔄 Parcialmente Implementados
-1.  **Desacoplamento do Provedor** - Modelo interno criado, mas falta interface `AuthGateway` abstrata
+### 🔄 Preparado para Implementação Futura
+1.  **Multi-Factor Authentication (MFA)** - Estrutura criada, aguardando implementação UI
+2.  **Timeout de Sessão** - Configurável, mas desabilitado por padrão
+3.  **Verificação de E-mail Obrigatória** - Pronto para habilitar em produção
 
-### ❌ Pendentes (Próximos Passos)
-1.  **Abstração Completa** - Criar interface `AuthGateway` para desacoplar totalmente do Firebase
-2.  **Melhorias de UX no Fluxo de Recuperação** - Validações e feedbacks mais ricos
-3.  **Configurações de Segurança Avançadas** - Persistence explícita e preparação para MFA
+---
 
-## Melhorias Implementadas Recentemente
+## Arquitetura Final Implementada
 
-### Tratamento Centralizado de Erros ✨
-Criamos uma arquitetura profissional de tratamento de erros:
-- **Arquivo:** `auth-error.ts` com a classe `AuthError` e função `mapFirebaseAuthError()`
-- **Benefícios:**
-  - DRY: Zero duplicação de código entre componentes
-  - Consistência: Mesmas mensagens em toda aplicação
-  - Manutenibilidade: Um único local para alterar mensagens
-  - UX: Mensagens em português e amigáveis ao usuário
-  - Segurança: Evita enumeração de usuários (mesma mensagem para erros similares)
+### 1. Abstração Completa via AuthGateway ✨
+
+**Arquivos criados:**
+- `auth-gateway.interface.ts` - Contrato abstrato de autenticação
+- `firebase-auth-gateway.ts` - Implementação concreta do Firebase
+- `auth.service.ts` - Consome apenas a interface (Inversão de Dependência)
+
+**Benefícios:**
+- ✅ **Testabilidade:** Fácil criar mocks da interface
+- ✅ **Flexibilidade:** Trocar provedor = criar nova implementação
+- ✅ **SOLID:** Princípio da Inversão de Dependência aplicado
+- ✅ **Manutenibilidade:** Mudanças no Firebase não afetam o service
+
+**Como trocar de provedor:**
+```typescript
+// Criar SupabaseAuthGateway implements AuthGateway
+// Alterar no provider:
+{ provide: AuthGateway, useClass: SupabaseAuthGateway }
+```
+
+### 2. Melhorias de UX na Recuperação de Senha 🎨
+
+**Implementações:**
+- ✅ Validação visual em tempo real (verde/vermelho)
+- ✅ Feedback imediato de formato de e-mail
+- ✅ Cooldown de 60s para reenvio (evita spam)
+- ✅ Contador visual do cooldown
+- ✅ Mensagens contextuais e informativas
+- ✅ Ícones e animações suaves
+
+**Impacto:**
+- Reduz tentativas de envio desnecessárias
+- Melhora percepção de segurança
+- Diminui suporte ao usuário
+
+### 3. Configurações de Segurança Avançadas 🔒
+
+**Arquivo:** `auth-config.ts`
+
+**Configurações disponíveis:**
+```typescript
+interface AuthConfig {
+  persistence: 'local' | 'session' | 'none';
+  sessionTimeoutMinutes: number | null;
+  requireEmailVerification: boolean;
+  enableMFA: boolean;
+  maxLoginAttempts: number | null;
+  lockoutDurationMinutes: number;
+  allowedRedirectUrls: string[];
+}
+```
+
+**Aplicação no app.config.ts:**
+- Desenvolvimento: `DEFAULT_AUTH_CONFIG` (persistência local, sem timeout)
+- Produção: `PRODUCTION_AUTH_CONFIG` (persistência de sessão, timeout de 30min)
+
+**Como habilitar MFA no futuro:**
+1. Atualizar `enableMFA: true` no config
+2. Criar componente de verificação de código
+3. Integrar com `gateway.verifyMFACode()`
+
+---
+
+## Melhorias Implementadas - Resumo Técnico
+
+### Tratamento Centralizado de Erros
+- **Arquivo:** `auth-error.ts`
+- **Padrão:** Custom Error Class + Error Mapper Function
+- **Códigos mapeados:** 15+ códigos Firebase → Mensagens em PT-BR
+
+### Validação de E-mail (Frontend)
+- Regex RFC 5322 simplificado
+- Previne chamadas desnecessárias ao backend
+- Melhora performance e UX
+
+### Rate Limiting (Frontend)
+- Cooldown de 60s no reset de senha
+- Previne abuso e sobrecarga do servidor
+- Firebase já possui rate limiting no backend

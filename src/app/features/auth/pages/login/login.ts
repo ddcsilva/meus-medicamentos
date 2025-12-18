@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { AuthService } from '../../../../core/auth/auth.service';
 
@@ -14,10 +14,13 @@ export class LoginComponent {
   private fb = inject(NonNullableFormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-  // Estado Reativo com Signals
   isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
+
+  // Feedback visual de loading global
+  readonly globalLoading = this.authService.isLoading;
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -29,6 +32,9 @@ export class LoginComponent {
   async onSubmit() {
     if (this.loginForm.invalid) return;
 
+    // Previne double-submit usando loading global
+    if (this.globalLoading()) return;
+
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
@@ -36,9 +42,11 @@ export class LoginComponent {
 
     try {
       await this.authService.login(email, password);
-      this.router.navigate(['/app/dashboard']);
+      
+      // Redireciona para a URL original ou dashboard
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/app/dashboard';
+      this.router.navigateByUrl(returnUrl);
     } catch (error: any) {
-      // O AuthService já retorna uma mensagem amigável via AuthError
       this.errorMessage.set(error.message || 'Ocorreu um erro inesperado.');
     } finally {
       this.isSubmitting.set(false);
