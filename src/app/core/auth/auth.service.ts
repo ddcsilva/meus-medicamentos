@@ -5,18 +5,6 @@ import { mapFirebaseAuthError } from './auth-error';
 import { AuthGateway } from './auth-gateway.interface';
 import { FirebaseAuthGateway } from './firebase-auth-gateway';
 
-/**
- * Serviço principal de autenticação da aplicação.
- * 
- * Segue o Princípio da Inversão de Dependência (SOLID):
- * - Depende de uma abstração (AuthGateway), não de uma implementação concreta
- * - Pode usar Firebase, AWS Cognito ou qualquer outro provedor sem alteração
- * 
- * Responsabilidades:
- * - Gerenciar estado global de autenticação (currentUser, isAuthenticated, isLoading)
- * - Orquestrar operações de autenticação via AuthGateway
- * - Tratar e mapear erros para mensagens amigáveis
- */
 @Injectable({
   providedIn: 'root',
 })
@@ -29,9 +17,6 @@ export class AuthService {
   public currentUser = toSignal<AppUser | null>(this.gateway.authState$);
   public isAuthenticated = computed(() => !!this.currentUser());
 
-  /**
-   * Realiza o login com E-mail e Senha
-   */
   async login(email: string, password: string): Promise<void> {
     this._isLoading.set(true);
     try {
@@ -43,9 +28,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Cria nova conta de usuário
-   */
   async register(email: string, password: string, fullName: string): Promise<void> {
     this._isLoading.set(true);
     try {
@@ -57,9 +39,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Encerra a sessão do usuário atual
-   */
   async logout(): Promise<void> {
     this._isLoading.set(true);
     try {
@@ -71,9 +50,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Envia e-mail de recuperação de senha
-   */
   async recoverPassword(email: string): Promise<void> {
     if (!this.isValidEmailFormat(email)) {
       throw mapFirebaseAuthError({ code: 'auth/invalid-email' });
@@ -89,9 +65,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Login com provedor social (Google, Facebook, etc.)
-   */
   async loginWithSocial(provider: 'google' | 'facebook' | 'apple'): Promise<void> {
     this._isLoading.set(true);
     try {
@@ -103,9 +76,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Atualiza o perfil do usuário autenticado
-   */
   async updateProfile(updates: { displayName?: string; photoURL?: string }): Promise<void> {
     this._isLoading.set(true);
     try {
@@ -118,9 +88,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Valida formato de e-mail
-   */
   private isValidEmailFormat(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);

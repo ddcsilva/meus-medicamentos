@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
-import { AUTH_ROUTES } from './app.routes';
+import { routes } from './app.routes';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import {
   getAuth,
@@ -28,7 +28,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(AUTH_ROUTES),
+    provideRouter(routes),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     
     // Configuração de Auth

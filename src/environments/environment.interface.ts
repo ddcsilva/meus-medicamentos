@@ -1,7 +1,3 @@
-/**
- * Interface para tipagem das variáveis de ambiente
- * Baseado na interface FirebaseOptions do Firebase SDK
- */
 export interface Environment {
   production: boolean;
   firebase: {

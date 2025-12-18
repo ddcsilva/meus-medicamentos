@@ -20,7 +20,6 @@ export class ResetPasswordComponent {
   canResend = signal(true);
   resendCountdown = signal(0);
 
-  // Feedback visual de loading global
   readonly globalLoading = this.authService.isLoading;
 
   resetForm = this.fb.group({
@@ -57,9 +56,6 @@ export class ResetPasswordComponent {
     }
   }
 
-  /**
-   * Reenvia o e-mail de recuperação (com cooldown de 60 segundos)
-   */
   async resendEmail() {
     if (!this.canResend()) return;
     
@@ -67,9 +63,6 @@ export class ResetPasswordComponent {
     await this.onSubmit();
   }
 
-  /**
-   * Inicia cooldown de 60 segundos antes de permitir novo envio
-   */
   private startResendCooldown() {
     this.canResend.set(false);
     this.resendCountdown.set(60);

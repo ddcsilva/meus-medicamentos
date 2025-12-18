@@ -19,7 +19,6 @@ export class LoginComponent {
   isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
 
-  // Feedback visual de loading global
   readonly globalLoading = this.authService.isLoading;
 
   loginForm = this.fb.group({
@@ -32,7 +31,6 @@ export class LoginComponent {
   async onSubmit() {
     if (this.loginForm.invalid) return;
 
-    // Previne double-submit usando loading global
     if (this.globalLoading()) return;
 
     this.isSubmitting.set(true);
@@ -43,7 +41,6 @@ export class LoginComponent {
     try {
       await this.authService.login(email, password);
       
-      // Redireciona para a URL original ou dashboard
       const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/app/dashboard';
       this.router.navigateByUrl(returnUrl);
     } catch (error: any) {

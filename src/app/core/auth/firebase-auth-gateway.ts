@@ -17,25 +17,18 @@ import {
 import { AuthGateway } from './auth-gateway.interface';
 import { AppUser } from './user.model';
 
-/**
- * Implementação do AuthGateway usando Firebase Authentication.
- * 
- * Esta é a única classe que conhece detalhes do Firebase.
- * Se migrarmos para outro provedor, criamos uma nova implementação
- * sem tocar no AuthService ou nos componentes.
- * 
- * Nota: Firebase usa browserLocalPersistence por padrão (mantém login após fechar navegador).
- * Para mudar isso em produção, configure via Firebase Console ou Rules.
- */
 @Injectable({
   providedIn: 'root',
 })
 export class FirebaseAuthGateway implements AuthGateway {
   private auth = inject(Auth);
+  readonly authState$: Observable<AppUser | null>;
 
-  readonly authState$: Observable<AppUser | null> = authState(this.auth).pipe(
-    map((user) => this.mapFirebaseUser(user))
-  );
+  constructor() {
+    this.authState$ = authState(this.auth).pipe(
+      map((user) => this.mapFirebaseUser(user))
+    );
+  }
 
   async signInWithEmailAndPassword(email: string, password: string): Promise<void> {
     await signInWithEmailAndPassword(this.auth, email, password);
@@ -78,19 +71,13 @@ export class FirebaseAuthGateway implements AuthGateway {
     }
   }
 
-  async updateUserProfile(updates: {
-    displayName?: string;
-    photoURL?: string;
-  }): Promise<void> {
+  async updateUserProfile(updates: { displayName?: string; photoURL?: string; }): Promise<void> {
     if (this.auth.currentUser) {
       await updateProfile(this.auth.currentUser, updates);
       await reload(this.auth.currentUser);
     }
   }
 
-  /**
-   * Converte o User do Firebase para o AppUser da aplicação
-   */
   private mapFirebaseUser(user: User | null): AppUser | null {
     if (!user) return null;
 

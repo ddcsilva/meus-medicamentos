@@ -20,7 +20,6 @@ export class RegisterComponent {
   isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
 
-  // Feedback visual de loading global
   readonly globalLoading = this.authService.isLoading;
 
   registerForm = this.fb.group(
@@ -33,7 +32,6 @@ export class RegisterComponent {
     { validators: passwordMatchValidator }
   );
 
-  // Computed signals para melhor UX
   get passwordControl() {
     return this.registerForm.controls.password;
   }
@@ -48,7 +46,6 @@ export class RegisterComponent {
   async onSubmit() {
     if (this.registerForm.invalid) return;
 
-    // Previne double-submit usando loading global
     if (this.globalLoading()) return;
 
     this.isSubmitting.set(true);
