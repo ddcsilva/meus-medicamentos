@@ -1,0 +1,89 @@
+<!-- OVERLAY MOBILE (Só aparece se menu aberto no celular) -->
+@if (layoutService.isMobileMenuOpen()) {
+<div
+  class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm md:hidden transition-opacity"
+  (click)="layoutService.closeMobileMenu()"
+></div>
+}
+
+<!-- SIDEBAR CONTAINER -->
+<!-- Classes explicadas:
+       fixed: sempre fixa na esquerda
+       z-50: acima de tudo
+       transition-all: animação suave de largura
+       -translate-x-full: escondida por padrão no mobile
+       md:translate-x-0: sempre visível no desktop
+  -->
+<aside
+  class="fixed top-0 left-0 z-50 h-screen bg-white border-r border-slate-200 transition-all duration-300 ease-in-out shadow-sm"
+  [ngClass]="{
+    'w-64': layoutService.isSidebarExpanded(),
+    'w-20': !layoutService.isSidebarExpanded(),
+    'translate-x-0': layoutService.isMobileMenuOpen(),
+    '-translate-x-full': !layoutService.isMobileMenuOpen() && 'md:translate-x-0'
+  }"
+>
+  <!-- HEADER DA SIDEBAR (Logo) -->
+  <div class="h-16 flex items-center justify-center border-b border-slate-100 relative">
+    @if (layoutService.isSidebarExpanded()) {
+    <div
+      class="flex items-center gap-2 font-bold text-xl text-teal-700 tracking-tight animate-fade-in"
+    >
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+        />
+      </svg>
+      <span>MedStock</span>
+    </div>
+    } @else {
+    <!-- Logo Reduzido -->
+    <svg class="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+      />
+    </svg>
+    }
+  </div>
+
+  <!-- NAVEGAÇÃO -->
+  <nav class="p-4 space-y-2 overflow-y-auto h-[calc(100vh-4rem)]">
+    @for (item of menuItems; track item.label) {
+    <a
+      [routerLink]="item.route"
+      routerLinkActive="bg-teal-50 text-teal-700 border-r-4 border-teal-600"
+      [routerLinkActiveOptions]="{ exact: item.exact }"
+      class="flex items-center gap-3 p-3 rounded-lg text-slate-500 hover:bg-slate-50 hover:text-teal-600 transition-colors group relative"
+      (click)="layoutService.closeMobileMenu()"
+    >
+      <!-- Ícone -->
+      <div
+        class="shrink-0 transition-transform duration-200"
+        [class.group-hover:scale-110]="!layoutService.isSidebarExpanded()"
+      >
+        <span [innerHTML]="item.icon"></span>
+      </div>
+
+      <!-- Texto (Escondido se colapsado) -->
+      @if (layoutService.isSidebarExpanded()) {
+      <span class="font-medium whitespace-nowrap animate-fade-in">{{ item.label }}</span>
+      }
+
+      <!-- Tooltip para modo Mini (CSS puro) -->
+      @if (!layoutService.isSidebarExpanded()) {
+      <div
+        class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-nowrap"
+      >
+        {{ item.label }}
+      </div>
+      }
+    </a>
+    }
+  </nav>
+</aside>

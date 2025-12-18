@@ -1,1 +1,163 @@
-<p>dashboard works!</p>
+<!-- Seção de Boas Vindas -->
+<section class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+  <div>
+    <h2 class="text-3xl font-bold text-slate-800 tracking-tight">
+      Olá, <span class="text-teal-600">{{ getFirstName() }}</span> 👋
+    </h2>
+    <p class="text-slate-500 mt-1">
+      Aqui está o resumo da sua saúde para hoje,
+      <span class="font-medium text-slate-600">{{ today | date : 'dd/MM/yyyy' }}</span>
+    </p>
+  </div>
+
+  <!-- Ação Rápida (Ex: Registrar Dose) -->
+  <button
+    class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-teal-200 transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M12 4v16m8-8H4"
+      ></path>
+    </svg>
+    Registrar Dose
+  </button>
+</section>
+
+<!-- Cards de Métricas -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <!-- Card: Próxima Dose (Destaque) -->
+  <div
+    class="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-2xl shadow-xl shadow-blue-200 text-white relative overflow-hidden group hover:-translate-y-1 transition-transform"
+  >
+    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+      <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+    </div>
+    <p class="text-blue-100 font-medium text-sm mb-2">Próxima Dose</p>
+    <h3 class="text-4xl font-bold mb-1">14:00</h3>
+    <p class="text-lg font-medium opacity-90">Amoxicilina 500mg</p>
+    <div
+      class="mt-4 inline-flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full text-sm backdrop-blur-sm"
+    >
+      <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+      Em 2 horas
+    </div>
+  </div>
+
+  <!-- Card: Adesão -->
+  <div
+    class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-teal-200 transition-colors group"
+  >
+    <div class="flex items-start justify-between mb-4">
+      <div
+        class="p-3 bg-teal-50 text-teal-600 rounded-xl group-hover:bg-teal-100 transition-colors"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+      </div>
+      <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg"
+        >+12% vs ontem</span
+      >
+    </div>
+    <h3 class="text-3xl font-bold text-slate-800">85%</h3>
+    <p class="text-slate-500 text-sm">Adesão ao tratamento</p>
+    <!-- Barra de Progresso -->
+    <div class="w-full bg-slate-100 rounded-full h-2 mt-4">
+      <div class="bg-teal-500 h-2 rounded-full" style="width: 85%"></div>
+    </div>
+  </div>
+
+  <!-- Card: Estoque Crítico -->
+  <div
+    class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:border-red-200 transition-colors group"
+  >
+    <div class="flex items-start justify-between mb-4">
+      <div class="p-3 bg-red-50 text-red-600 rounded-xl group-hover:bg-red-100 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          ></path>
+        </svg>
+      </div>
+      <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-lg"
+        >Ação Necessária</span
+      >
+    </div>
+    <h3 class="text-3xl font-bold text-slate-800">1 Item</h3>
+    <p class="text-slate-500 text-sm">Com estoque baixo</p>
+    <p class="text-sm text-red-600 font-medium mt-4 flex items-center gap-1">
+      <span>Repor: Dipirona</span>
+    </p>
+  </div>
+</div>
+
+<!-- Tabela / Lista Recente -->
+<div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+  <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+    <h3 class="font-bold text-slate-800">Cronograma de Hoje</h3>
+    <button class="text-sm text-teal-600 font-semibold hover:text-teal-700 hover:underline">
+      Ver agenda completa
+    </button>
+  </div>
+
+  <!-- Lista de Itens -->
+  <div class="divide-y divide-slate-100">
+    <!-- Item 1: Concluído -->
+    <div class="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
+      <div
+        class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"
+          ></path>
+        </svg>
+      </div>
+      <div class="flex-1">
+        <h4 class="font-semibold text-slate-800 line-through opacity-50">Vitamina D</h4>
+        <p class="text-xs text-slate-500">1 Cápsula • Tomado às 08:05</p>
+      </div>
+      <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">Feito</span>
+    </div>
+
+    <!-- Item 2: Pendente -->
+    <div
+      class="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors border-l-4 border-l-blue-500 bg-blue-50/10"
+    >
+      <div
+        class="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-400 flex items-center justify-center shrink-0"
+      >
+        <span class="font-bold text-xs">14:00</span>
+      </div>
+      <div class="flex-1">
+        <h4 class="font-semibold text-slate-800">Amoxicilina</h4>
+        <p class="text-xs text-slate-500">1 Comprimido (500mg)</p>
+      </div>
+      <button
+        class="text-sm bg-white border border-slate-200 hover:border-blue-500 hover:text-blue-600 text-slate-600 px-3 py-1.5 rounded-lg font-medium transition-all shadow-sm"
+      >
+        Marcar
+      </button>
+    </div>
+  </div>
+</div>
