@@ -43,8 +43,9 @@ export class LoginComponent {
       
       const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/app/dashboard';
       this.router.navigateByUrl(returnUrl);
-    } catch (error: any) {
-      this.errorMessage.set(error.message || 'Ocorreu um erro inesperado.');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Ocorreu um erro inesperado.';
+      this.errorMessage.set(message);
     } finally {
       this.isSubmitting.set(false);
     }

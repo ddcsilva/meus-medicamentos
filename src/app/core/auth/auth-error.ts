@@ -2,15 +2,17 @@ export class AuthError extends Error {
   constructor(
     public readonly code: string,
     public readonly userMessage: string,
-    public readonly originalError?: any
+    public readonly originalError?: unknown
   ) {
     super(userMessage);
     this.name = 'AuthError';
   }
 }
 
-export function mapFirebaseAuthError(error: any): AuthError {
-  const code = error?.code || 'unknown';
+export function mapFirebaseAuthError(error: unknown): AuthError {
+  const code = (error && typeof error === 'object' && 'code' in error && typeof error.code === 'string')
+    ? error.code
+    : 'unknown';
 
   const errorMessages: Record<string, string> = {
     'auth/invalid-credential': 'E-mail ou senha incorretos.',

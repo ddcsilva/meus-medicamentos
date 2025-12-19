@@ -49,8 +49,9 @@ export class ResetPasswordComponent {
       await this.authService.recoverPassword(email);
       this.emailSent.set(true);
       this.startResendCooldown();
-    } catch (error: any) {
-      this.errorMessage.set(error.message || 'Não foi possível enviar o e-mail.');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Não foi possível enviar o e-mail.';
+      this.errorMessage.set(message);
     } finally {
       this.isSubmitting.set(false);
     }

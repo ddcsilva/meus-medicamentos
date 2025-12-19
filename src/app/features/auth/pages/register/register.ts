@@ -56,8 +56,9 @@ export class RegisterComponent {
     try {
       await this.authService.register(email, password, fullName);
       this.router.navigate(['/app/dashboard']);
-    } catch (error: any) {
-      this.errorMessage.set(error.message || 'Ocorreu um erro inesperado.');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Ocorreu um erro inesperado.';
+      this.errorMessage.set(message);
     } finally {
       this.isSubmitting.set(false);
     }

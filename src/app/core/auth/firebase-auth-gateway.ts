@@ -62,7 +62,10 @@ export class FirebaseAuthGateway implements AuthGateway {
         throw new Error(`Provedor ${provider} não implementado`);
     }
 
-    await signInWithPopup(this.auth, authProvider);
+    const result = await signInWithPopup(this.auth, authProvider);
+    
+    // Retorna o resultado para que o AuthService possa criar o documento do usuário se necessário
+    return;
   }
 
   async reloadUser(): Promise<void> {

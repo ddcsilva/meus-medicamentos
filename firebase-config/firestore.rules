@@ -3,24 +3,143 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Função auxiliar para verificar autenticação
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    // Verifica se o usuário está autenticado
     function isAuthenticated() {
       return request.auth != null;
     }
-
-    // Função auxiliar para verificar se é dono do dado (ex: user profile)
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    // Regra Padrão: Bloqueia tudo que não for explicitamente permitido abaixo
-    match /{document=**} {
-      allow read, write: if false;
+    
+    // Verifica se o usuário é admin via Custom Claims
+    function isAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.get('isAdmin', false) == true;
     }
     
-    // Exemplo: Coleção de Usuários (Apenas o próprio usuário lê/edita seu doc)
+    // Verifica se o usuário foi aprovado (status='approved')
+    function isApproved() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'approved';
+    }
+    
+    // Verifica se o usuário é membro de uma família específica
+    function isMemberOfFamily(familyId) {
+      return isAuthenticated() && 
+             request.auth.uid in get(/databases/$(database)/documents/families/$(familyId)).data.members;
+    }
+    
+    // Verifica se o usuário é o dono do documento
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+    
     match /users/{userId} {
-      allow read, write: if isAuthenticated() && isOwner(userId);
+      // Leitura: próprio usuário ou admin
+      allow read: if isAuthenticated() && (
+        isOwner(userId) || isAdmin()
+      );
+      
+      // Criação: apenas o próprio usuário, status obrigatoriamente 'pending'
+      allow create: if isAuthenticated() && 
+                       isOwner(userId) &&
+                       request.resource.data.status == 'pending' &&
+                       request.resource.data.keys().hasAll(['email', 'nome', 'status', 'familyId', 'createdAt']) &&
+                       request.resource.data.familyId == null;
+      
+      // Atualização:
+      // - próprio usuário: NÃO pode mudar status/familyId/email/createdAt (evita bypass e vazamento de privilégios)
+      // - admin: pode atualizar (ex: status)
+      allow update: if isAuthenticated() && (
+        (
+          isOwner(userId) &&
+          request.resource.data.status == resource.data.status &&
+          request.resource.data.familyId == resource.data.familyId &&
+          request.resource.data.email == resource.data.email &&
+          request.resource.data.createdAt == resource.data.createdAt
+        ) ||
+        isAdmin()
+      );
+      
+      // Exclusão: nunca permitida
+      allow delete: if false;
+    }
+    
+    // ============================================
+    // FAMILIES COLLECTION
+    // ============================================
+    
+    match /families/{familyId} {
+      // Leitura: membros da família
+      allow read: if isAuthenticated() && isMemberOfFamily(familyId);
+      
+      // Criação: usuário aprovado, deve incluir a si mesmo nos members
+      allow create: if isAuthenticated() && 
+                       isApproved() &&
+                       request.resource.data.createdBy == request.auth.uid &&
+                       request.auth.uid in request.resource.data.members &&
+                       request.resource.data.keys().hasAll(['familyName', 'createdBy', 'members', 'inviteCode', 'createdAt', 'memberRoles']) &&
+                       request.resource.data.memberRoles[request.auth.uid] == 'admin';
+      
+      // Atualização: SOMENTE membros (ou admin) podem atualizar.
+      // Entrada em família deve ocorrer via Cloud Function transacional (joinFamilyByInviteCode),
+      // evitando que não-membros se adicionem "na marra".
+      allow update: if isAuthenticated() && (
+        isMemberOfFamily(familyId) || isAdmin()
+      );
+      
+      // Exclusão: nunca permitida
+      allow delete: if false;
+    }
+    
+    // ============================================
+    // MEDICATIONS COLLECTION
+    // ============================================
+    
+    match /medications/{medicationId} {
+      // Leitura: membros da família do medicamento
+      allow read: if isAuthenticated() && 
+                     isMemberOfFamily(resource.data.familyId);
+      
+      // Criação: usuário aprovado, membro da família especificada
+      allow create: if isAuthenticated() && 
+                       isApproved() &&
+                       isMemberOfFamily(request.resource.data.familyId) &&
+                       request.resource.data.criadoPor == request.auth.uid &&
+                       request.resource.data.keys().hasAll(['familyId', 'nome', 'droga', 'generico', 'tipo', 'validade', 'quantidadeTotal', 'quantidadeAtual', 'criadoPor', 'criadoEm', 'atualizadoEm']) &&
+                       request.resource.data.quantidadeTotal is int &&
+                       request.resource.data.quantidadeAtual is int &&
+                       request.resource.data.quantidadeTotal >= 1 &&
+                       request.resource.data.quantidadeAtual >= 0 &&
+                       request.resource.data.quantidadeAtual <= request.resource.data.quantidadeTotal;
+      
+      // Atualização: membros da família podem editar
+      allow update: if isAuthenticated() && 
+                       isMemberOfFamily(resource.data.familyId) &&
+                       request.resource.data.familyId == resource.data.familyId && // Não pode mudar de família
+                       request.resource.data.criadoPor == resource.data.criadoPor && // Não pode mudar criador
+                       request.resource.data.quantidadeTotal is int &&
+                       request.resource.data.quantidadeAtual is int &&
+                       request.resource.data.quantidadeTotal >= 1 &&
+                       request.resource.data.quantidadeAtual >= 0 &&
+                       request.resource.data.quantidadeAtual <= request.resource.data.quantidadeTotal;
+      
+      // Exclusão: membros da família podem deletar
+      allow delete: if isAuthenticated() && 
+                       isMemberOfFamily(resource.data.familyId);
+    }
+    
+    // ============================================
+    // DEFAULT DENY
+    // ============================================
+    
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

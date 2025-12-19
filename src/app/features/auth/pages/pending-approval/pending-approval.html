@@ -1,0 +1,121 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="max-w-md w-full space-y-8">
+    <!-- Card -->
+    <div class="bg-white rounded-lg shadow-lg p-8">
+      <!-- Ícone de Clock -->
+      <div class="flex justify-center mb-6">
+        <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center">
+          <svg
+            class="w-10 h-10 text-yellow-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Título -->
+      <h2 class="text-2xl font-bold text-center text-gray-900 mb-4">
+        Aguardando Aprovação
+      </h2>
+
+      <!-- Mensagem -->
+      <div class="space-y-4 text-center">
+        <p class="text-gray-600">
+          Sua conta foi criada com sucesso!
+        </p>
+        <p class="text-gray-600">
+          Um administrador irá revisar seu cadastro em breve.
+        </p>
+        <p class="text-sm text-gray-500">
+          Você receberá acesso assim que sua conta for aprovada.
+        </p>
+
+        @if (userEmail) {
+          <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-blue-800">
+              <span class="font-semibold">Email cadastrado:</span><br />
+              {{ userEmail }}
+            </p>
+          </div>
+        }
+      </div>
+
+      <!-- Instruções -->
+      <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+        <h3 class="text-sm font-semibold text-gray-900 mb-2">
+          Enquanto aguarda:
+        </h3>
+        <ul class="text-sm text-gray-600 space-y-2">
+          <li class="flex items-start">
+            <svg
+              class="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>Verifique seu email para confirmar o endereço</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>Esta página será atualizada automaticamente quando aprovado</span>
+          </li>
+          <li class="flex items-start">
+            <svg
+              class="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>Não é necessário recarregar a página</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Botão de Logout -->
+      <div class="mt-8">
+        <button
+          type="button"
+          (click)="handleLogout()"
+          class="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+        >
+          Sair
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center">
+      <p class="text-sm text-gray-500">
+        Problemas? Entre em contato com o suporte.
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,287 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+  <div class="max-w-md w-full">
+    <!-- Escolher Modo -->
+    @if (mode() === 'choose') {
+      <div class="space-y-6">
+        <!-- Header -->
+        <div class="text-center">
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">Configure sua Família</h2>
+          <p class="text-gray-600">
+            Crie uma nova família ou entre em uma existente
+          </p>
+        </div>
+
+        <!-- Cards de Opção -->
+        <div class="grid gap-4">
+          <!-- Criar Família -->
+          <button
+            type="button"
+            (click)="selectMode('create')"
+            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-left group"
+          >
+            <div class="flex items-start">
+              <div
+                class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors"
+              >
+                <svg
+                  class="w-6 h-6 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                  Criar Nova Família
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Inicie uma nova família e convide membros
+                </p>
+              </div>
+            </div>
+          </button>
+
+          <!-- Entrar em Família -->
+          <button
+            type="button"
+            (click)="selectMode('join')"
+            class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow text-left group"
+          >
+            <div class="flex items-start">
+              <div
+                class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors"
+              >
+                <svg
+                  class="w-6 h-6 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                  Entrar em Família Existente
+                </h3>
+                <p class="text-sm text-gray-600">
+                  Use um código de convite para participar
+                </p>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Logout -->
+        <div class="text-center pt-4">
+          <button
+            type="button"
+            (click)="handleLogout()"
+            class="text-sm text-gray-600 hover:text-gray-900"
+          >
+            Sair
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Criar Família -->
+    @if (mode() === 'create') {
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <!-- Header -->
+        <div class="mb-6">
+          <button
+            type="button"
+            (click)="back()"
+            class="text-sm text-gray-600 hover:text-gray-900 mb-4 flex items-center"
+          >
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Voltar
+          </button>
+          <h2 class="text-2xl font-bold text-gray-900">Criar Nova Família</h2>
+          <p class="text-gray-600 mt-2">
+            Escolha um nome para sua família
+          </p>
+        </div>
+
+        <!-- Código de Convite Gerado -->
+        @if (createdInviteCode()) {
+          <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-semibold text-green-800 mb-1">
+                  Código de Convite:
+                </p>
+                <p class="text-2xl font-bold text-green-900 font-mono">
+                  {{ createdInviteCode() }}
+                </p>
+              </div>
+              <button
+                type="button"
+                (click)="copyInviteCode()"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+              >
+                Copiar
+              </button>
+            </div>
+            <p class="text-xs text-green-700 mt-2">
+              Compartilhe este código com os membros da sua família
+            </p>
+          </div>
+        }
+
+        <!-- Mensagens -->
+        @if (successMessage()) {
+          <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p class="text-sm text-green-800">{{ successMessage() }}</p>
+          </div>
+        }
+
+        @if (errorMessage()) {
+          <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-sm text-red-800">{{ errorMessage() }}</p>
+          </div>
+        }
+
+        <!-- Formulário -->
+        <form [formGroup]="createForm" (ngSubmit)="handleCreateFamily()">
+          <div class="mb-6">
+            <label for="familyName" class="block text-sm font-medium text-gray-700 mb-2">
+              Nome da Família
+            </label>
+            <input
+              id="familyName"
+              type="text"
+              formControlName="familyName"
+              placeholder="Ex: Família Silva"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              [class.border-red-500]="
+                createForm.get('familyName')?.invalid &&
+                createForm.get('familyName')?.touched
+              "
+            />
+            @if (
+              createForm.get('familyName')?.invalid && createForm.get('familyName')?.touched
+            ) {
+              <p class="mt-1 text-sm text-red-600">
+                Nome deve ter entre 3 e 50 caracteres
+              </p>
+            }
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="createForm.invalid || isLoading()"
+            class="w-full py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            @if (isLoading()) {
+              <span>Criando...</span>
+            } @else {
+              <span>Criar Família</span>
+            }
+          </button>
+        </form>
+      </div>
+    }
+
+    <!-- Entrar em Família -->
+    @if (mode() === 'join') {
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <!-- Header -->
+        <div class="mb-6">
+          <button
+            type="button"
+            (click)="back()"
+            class="text-sm text-gray-600 hover:text-gray-900 mb-4 flex items-center"
+          >
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Voltar
+          </button>
+          <h2 class="text-2xl font-bold text-gray-900">Entrar em Família</h2>
+          <p class="text-gray-600 mt-2">
+            Digite o código de convite que você recebeu
+          </p>
+        </div>
+
+        <!-- Mensagens -->
+        @if (successMessage()) {
+          <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p class="text-sm text-green-800">{{ successMessage() }}</p>
+          </div>
+        }
+
+        @if (errorMessage()) {
+          <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-sm text-red-800">{{ errorMessage() }}</p>
+          </div>
+        }
+
+        <!-- Formulário -->
+        <form [formGroup]="joinForm" (ngSubmit)="handleJoinFamily()">
+          <div class="mb-6">
+            <label for="inviteCode" class="block text-sm font-medium text-gray-700 mb-2">
+              Código de Convite
+            </label>
+            <input
+              id="inviteCode"
+              type="text"
+              formControlName="inviteCode"
+              (input)="formatInviteCode($event)"
+              placeholder="FAM-XXXXXX"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-lg tracking-wide uppercase"
+              [class.border-red-500]="
+                joinForm.get('inviteCode')?.invalid && joinForm.get('inviteCode')?.touched
+              "
+            />
+            @if (joinForm.get('inviteCode')?.invalid && joinForm.get('inviteCode')?.touched) {
+              <p class="mt-1 text-sm text-red-600">
+                Código inválido. Formato: FAM-XXXXXX
+              </p>
+            }
+            <p class="mt-2 text-xs text-gray-500">
+              O código deve ter o formato FAM-XXXXXX
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="joinForm.invalid || isLoading()"
+            class="w-full py-3 px-4 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            @if (isLoading()) {
+              <span>Entrando...</span>
+            } @else {
+              <span>Entrar na Família</span>
+            }
+          </button>
+        </form>
+      </div>
+    }
+  </div>
+</div>

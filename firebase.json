@@ -3,7 +3,7 @@
     "database": "(default)",
     "location": "southamerica-east1",
     "rules": "firebase-config/firestore.rules",
-    "indexes": "firebase-config/firestore.indexes.json"
+    "indexes": "firestore.indexes.json"
   },
   "functions": [
     {
@@ -16,10 +16,6 @@
         "firebase-debug.log",
         "firebase-debug.*.log",
         "*.local"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint",
-        "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }
   ],

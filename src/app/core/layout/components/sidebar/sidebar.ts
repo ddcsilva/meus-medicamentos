@@ -21,21 +21,9 @@ export class Sidebar {
     },
     {
       label: 'Medicamentos',
-      route: '/app/medicines',
+      route: '/app/medications',
       exact: false,
       icon: 'medicamentos',
-    },
-    {
-      label: 'Estoque',
-      route: '/app/inventory',
-      exact: false,
-      icon: 'estoque',
-    },
-    {
-      label: 'Configurações',
-      route: '/app/settings',
-      exact: false,
-      icon: 'configuracoes',
     },
   ];
 }

@@ -1,0 +1,270 @@
+<div class="p-6 max-w-7xl mx-auto">
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Medicamentos</h1>
+    <p class="text-gray-600">Gerencie os medicamentos da sua família</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">Total</p>
+          <p class="text-3xl font-bold text-gray-900">{{ stats().total }}</p>
+        </div>
+        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">Vencendo</p>
+          <p class="text-3xl font-bold text-yellow-600">{{ stats().expiringSoon }}</p>
+        </div>
+        <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+          <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">Vencidos</p>
+          <p class="text-3xl font-bold text-red-600">{{ stats().expired }}</p>
+        </div>
+        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">Estoque Baixo</p>
+          <p class="text-3xl font-bold text-orange-600">{{ stats().lowStock }}</p>
+        </div>
+        <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+          <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <div class="flex flex-col md:flex-row gap-4">
+      <!-- Search -->
+      <div class="flex-1">
+        <input
+          type="text"
+          placeholder="Buscar por nome, droga ou marca..."
+          [value]="searchTerm()"
+          (input)="onSearchChange($event)"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+
+      <!-- Status Filter -->
+      <div class="md:w-48">
+        <select
+          [value]="selectedStatus()"
+          (change)="onStatusFilterChange($event)"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="ALL">Todos os status</option>
+          <option value="VALIDO">Válidos</option>
+          <option value="PRESTES_VENCER">Vencendo</option>
+          <option value="VENCIDO">Vencidos</option>
+        </select>
+      </div>
+
+      <!-- Add Button -->
+      <button
+        (click)="navigateToNew()"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center justify-center"
+      >
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Adicionar
+      </button>
+    </div>
+  </div>
+
+  <!-- Medications List -->
+  @if (isLoading()) {
+    <div class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+  } @else if (filteredMedications().length === 0) {
+    <!-- Empty State -->
+    <div class="bg-white rounded-lg shadow p-12 text-center">
+      <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          />
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-900 mb-2">Nenhum medicamento encontrado</h3>
+      @if (searchTerm() || selectedStatus() !== 'ALL') {
+        <p class="text-gray-600 mb-4">
+          Tente ajustar os filtros ou faça uma nova busca
+        </p>
+      } @else {
+        <p class="text-gray-600 mb-4">
+          Comece adicionando o primeiro medicamento da sua família
+        </p>
+        <button
+          (click)="navigateToNew()"
+          class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Adicionar Medicamento
+        </button>
+      }
+    </div>
+  } @else {
+    <!-- Medications Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (medication of filteredMedications(); track medication.id) {
+        <div
+          class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer"
+          (click)="navigateToDetail(medication.id)"
+        >
+          <!-- Image -->
+          @if (medication.fotoUrl) {
+            <img
+              [src]="medication.fotoUrl"
+              [alt]="medication.nome"
+              class="w-full h-48 object-cover rounded-t-lg"
+            />
+          } @else {
+            <div class="w-full h-48 bg-gray-100 rounded-t-lg flex items-center justify-center">
+              <svg
+                class="w-16 h-16 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
+              </svg>
+            </div>
+          }
+
+          <!-- Content -->
+          <div class="p-4">
+            <!-- Header -->
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                  {{ medication.nome }}
+                </h3>
+                <p class="text-sm text-gray-600">{{ medication.droga }}</p>
+              </div>
+              <span
+                [class]="'px-2 py-1 text-xs font-semibold rounded-full ' + getStatusClass(medication)"
+              >
+                {{ getStatusLabel(medication) }}
+              </span>
+            </div>
+
+            <!-- Details -->
+            <div class="space-y-2 mb-4">
+              <div class="flex items-center text-sm text-gray-600">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                Validade: {{ formatDate(medication.validade) }}
+              </div>
+
+              @if (medication.marca) {
+                <div class="flex items-center text-sm text-gray-600">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                    />
+                  </svg>
+                  {{ medication.marca }}
+                </div>
+              }
+            </div>
+
+            <!-- Stock Progress -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Estoque</span>
+                <span class="font-medium text-gray-900">
+                  {{ medication.quantidadeAtual }}/{{ medication.quantidadeTotal }}
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  [class]="'h-2 rounded-full transition-all ' + getStockClass(medication)"
+                  [style.width.%]="getStockPercentage(medication)"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
